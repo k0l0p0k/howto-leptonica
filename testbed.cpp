@@ -4,11 +4,12 @@
 #include <vector>
 #include "leptpp.h"
 using namespace std;
+using namespace leptpp;
 
 int main(int argc, char* argv[])
 {
 	string inpath = argv[1];
-	string outpath = argv[2];
+	string outdir = argv[2];
 	LEPTPP io;
 	io.read(inpath);
 	if(io.valid() == 0)
@@ -26,9 +27,15 @@ int main(int argc, char* argv[])
 		cout<<"error: binarize()"<<endl;
 		return 0;
 	}
-	if(0 != io.write(outpath))
+	ostringstream oss;
+	oss<<outdir<<"/output.png";
+	if(0 != io.write(oss.str()))
 	{
 		cout<<"unk format"<<endl;
 	}
+
+	CCL* ccl = io.ccl();
+	ccl->write(outdir);
+	delete ccl;
 	return 0;
 }

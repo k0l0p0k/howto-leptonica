@@ -1,5 +1,7 @@
 #include "leptpp.h"
 #include "baseapi.h"
+namespace leptpp
+{
 
 int get_pixel_format_from_name(string filename)
 {
@@ -32,6 +34,7 @@ LEPTPP::~LEPTPP()
 		pixDestroy(&m_pix);
 	}
 	m_pix = NULL;
+
 }
 int LEPTPP::valid()
 {
@@ -96,4 +99,68 @@ int LEPTPP::binarize()
 	return 0;
 }
 
+CCL* LEPTPP::ccl()
+{
+	if(valid() == 0)
+		return NULL;
+	Pixa* pics;
+	Boxa* boxs;
+	pics = pixaCreate(0);
+	boxs = pixConnComp(m_pix, &pics, 8);
 
+	CCL* ccl = new CCL();
+	ccl->boxs() = boxs;
+	ccl->pics() = pics;
+	return ccl;
+}
+
+
+/////////////////////////////////////////////////////////////////////
+//-------------------------CCL-------------------------------------
+
+CCL::CCL()
+{
+	m_pics = NULL;
+	m_boxs = NULL;
+}
+CCL::~CCL()
+{
+	if(m_pics != NULL)
+	{
+		pixaDestroy(&m_pics);
+	}
+	if(m_boxs != NULL)
+	{
+		boxaDestroy(&m_boxs);
+	}
+}
+
+Pixa*& CCL::pics()
+{
+	return m_pics;
+}
+
+Boxa*& CCL::boxs()
+{
+	return m_boxs;
+}
+
+
+int CCL::write(string outdir )
+{
+	if(m_pics == NULL || m_boxs == NULL)
+		return -1;
+	for(int k = 0; k < m_pics->n; k++)
+	{
+		PIX* pic = m_pics->pix[k];
+		BOX* box = m_boxs->box[k];
+		ostringstream oss;
+		oss<<outdir<<"/ccl"<<k<<"["<<box->x<<","<<box->y<<","<<box->x + box->w - 1<<","<<box->y + box->h - 1<<"].png";
+		if( 0 != pixWrite(oss.str().c_str(), pic, IFF_PNG))
+			return -1;
+	}
+	return 0;
+}
+
+
+};
