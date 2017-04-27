@@ -16,6 +16,8 @@ class LEPTPP
 		int valid();
 		int read(string filepath);
 		int write(string filepath);
+		int binarize();
+		int cvt2gray();
 };
 
 
