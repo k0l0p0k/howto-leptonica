@@ -1,5 +1,6 @@
 #include "leptpp.h"
 #include "baseapi.h"
+using namespace tesseract;
 namespace leptpp
 {
 
@@ -114,6 +115,38 @@ CCL* LEPTPP::ccl()
 	return ccl;
 }
 
+int LEPTPP::ocr_by_word()
+{
+#if 0
+	return 0;
+#else
+	TessBaseAPI* api = new TessBaseAPI();
+	if( api->Init(NULL,"eng") != 0)
+	{
+		fprintf(stderr,"could not initialize tesseract.\n");
+		return 0;
+	}
+	api->SetPageSegMode(PSM_AUTO);
+	//api->SetVariable("save_blob_choices","true");
+	api->SetImage(m_pix);
+	api->Recognize(NULL);
+	ResultIterator* ri = api->GetIterator();
+	PageIteratorLevel level = RIL_WORD;
+	if(ri != NULL)
+	{
+		do{
+			const char* word = ri->GetUTF8Text(level);
+			float conf = ri->Confidence(level);
+			int x0,x1,y0,y1;
+			ri->BoundingBox(level,&x0,&y0,&x1,&y1);
+			printf("word:'%s';\tconf:%.2f;\tbbox:%d,%d,%d,%d\r\n", word, conf, x0,x1,y0,y1);
+			delete[] word;
+		}while(ri->Next(level));
+	}
+	return 0;
+#endif
+}
+
 
 /////////////////////////////////////////////////////////////////////
 //-------------------------CCL-------------------------------------
@@ -161,6 +194,5 @@ int CCL::write(string outdir )
 	}
 	return 0;
 }
-
 
 };

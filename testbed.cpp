@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
 		cout<<"error: binarize()"<<endl;
 		return 0;
 	}
+	io.ocr_by_word();
 	ostringstream oss;
 	oss<<outdir<<"/output.png";
 	if(0 != io.write(oss.str()))

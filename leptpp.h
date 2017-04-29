@@ -5,7 +5,9 @@
 #include <sstream>
 #include <algorithm>
 #include "allheaders.h"
+#include "baseapi.h"
 using namespace std;
+using namespace tesseract;
 
 namespace leptpp
 {
@@ -25,7 +27,7 @@ class CCL
 class LEPTPP
 {
 	private:
-		PIX * m_pix;
+		Pix * m_pix;
 	public:
 		LEPTPP();
 		~LEPTPP();
@@ -36,6 +38,7 @@ class LEPTPP
 		int binarize();
 		int cvt2gray();
 		CCL* ccl();
+		int ocr_by_word();
 };
 
 };
