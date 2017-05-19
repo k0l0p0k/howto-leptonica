@@ -1,5 +1,6 @@
 #include "leptpp.h"
-#include "baseapi.h"
+#include "ctess.h"
+#include "pageres.h"
 using namespace tesseract;
 namespace leptpp
 {
@@ -115,12 +116,38 @@ CCL* LEPTPP::ccl()
 	return ccl;
 }
 
+
+int LEPTPP::ocr_page_layout()
+{
+	CTESS* api = new CTESS();
+	if( api->Init(NULL,"eng") != 0)
+	{
+		fprintf(stderr,"could not initialize tesseract.\n");
+		return 0;
+	}
+	api->SetPageSegMode(PSM_AUTO);
+	api->SetImage(m_pix);
+	api->Recognize(NULL);
+	const PAGE_RES* pages = api->extGetPageRes();
+	const BLOCK_RES_LIST* blocks = &(pages->block_res_list);
+	BLOCK_RES_IT block_it( (BLOCK_RES_LIST*) blocks );
+	block_it.move_to_first();
+	for(int blockI = 0; blockI < blocks->length(); blockI++)
+	{
+		BLOCK_RES* block = block_it.data();
+		
+	}
+
+	return 0;
+}
+
 int LEPTPP::ocr_by_word()
 {
 #if 0
 	return 0;
 #else
-	TessBaseAPI* api = new TessBaseAPI();
+	//TessBaseAPI* api = new TessBaseAPI();
+	CTESS* api = new CTESS();
 	if( api->Init(NULL,"eng") != 0)
 	{
 		fprintf(stderr,"could not initialize tesseract.\n");
@@ -146,6 +173,8 @@ int LEPTPP::ocr_by_word()
 	return 0;
 #endif
 }
+
+
 
 
 /////////////////////////////////////////////////////////////////////

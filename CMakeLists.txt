@@ -3,6 +3,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(testbed)
 
 INCLUDE_DIRECTORIES(. /usr/include/leptonica 
+	${CMAKE_SOURCE_DIR}/../tess/tesseract/ccstruct/
+	${CMAKE_SOURCE_DIR}/../tess/tesseract/ccutil/
+	${CMAKE_SOURCE_DIR}/../tess/tesseract/viewer/
 	              /usr/local/include/tesseract)
 AUX_SOURCE_DIRECTORY(. SRC_LIST)
 

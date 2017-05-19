@@ -39,6 +39,7 @@ class LEPTPP
 		int cvt2gray();
 		CCL* ccl();
 		int ocr_by_word();
+		int ocr_page_layout();
 };
 
 };
