@@ -132,10 +132,32 @@ int LEPTPP::ocr_page_layout()
 	const BLOCK_RES_LIST* blocks = &(pages->block_res_list);
 	BLOCK_RES_IT block_it( (BLOCK_RES_LIST*) blocks );
 	block_it.move_to_first();
+	FILE* fd = fopen("pagelayout.txt", "wb");
 	for(int blockI = 0; blockI < blocks->length(); blockI++)
 	{
 		BLOCK_RES* block = block_it.data();
-		
+
+
+		ROW_RES_LIST* rows = &(block->row_res_list);
+		ROW_RES_IT row_it( rows );
+		row_it.move_to_first();
+		for(int rowI = 0; rowI < rows->length(); rowI++)
+		{
+			ROW_RES* row = row_it.data();
+			WERD_RES_LIST* words = &(row->word_res_list);
+			WERD_RES_IT word_it( words);
+			word_it.move_to_first();
+			for(int wordI = 0; wordI < words->length(); wordI++)
+			{
+				WERD_RES* word = word_it.data();
+				TBOX rect = word->word->bounding_box();
+
+				word_it.forward();
+			}
+			row_it.forward();
+		}
+		block_it.forward();
+
 	}
 
 	return 0;
