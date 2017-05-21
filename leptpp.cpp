@@ -119,6 +119,8 @@ CCL* LEPTPP::ccl()
 
 int LEPTPP::ocr_page_layout()
 {
+	int width = pixGetWidth(m_pix);
+	int height = pixGetHeight(m_pix);
 	CTESS* api = new CTESS();
 	if( api->Init(NULL,"eng") != 0)
 	{
@@ -136,29 +138,53 @@ int LEPTPP::ocr_page_layout()
 	for(int blockI = 0; blockI < blocks->length(); blockI++)
 	{
 		BLOCK_RES* block = block_it.data();
-
-
 		ROW_RES_LIST* rows = &(block->row_res_list);
 		ROW_RES_IT row_it( rows );
 		row_it.move_to_first();
+		int bx0 = width;
+		int by0 = height;
+		int bx1 = 0;
+		int by1 = 0;
 		for(int rowI = 0; rowI < rows->length(); rowI++)
 		{
 			ROW_RES* row = row_it.data();
 			WERD_RES_LIST* words = &(row->word_res_list);
 			WERD_RES_IT word_it( words);
 			word_it.move_to_first();
+			int rx0 = width;
+			int rx1 = 0;
+		       	int ry0 = height;
+			int ry1 = 0;	
 			for(int wordI = 0; wordI < words->length(); wordI++)
 			{
 				WERD_RES* word = word_it.data();
 				TBOX rect = word->word->bounding_box();
+				int left = rect.left();
+				int right = rect.right();
+				int top = height - rect.top();
+				int bottom = height - rect.bottom();
+
+				if(rx0 > left) rx0 = left;
+				if(ry0 > top) ry0 = top;
+				if(rx1 < right) rx1 = right;
+				if(ry1 < bottom) ry1 = bottom;
 
 				word_it.forward();
 			}
+			fprintf(fd,"\trow%d,%d,%d,%d,%d\r\n",rowI,rx0,rx1,ry0,ry1);
+
+			if(bx0 > rx0) bx0 = rx0;
+			if(by0 > ry0) by0 = ry0;
+			if(bx1 < rx1) bx1 = rx1;
+			if(by1 < ry1) by1 = ry1;
+
 			row_it.forward();
 		}
+		fprintf(fd,"block%d,%d,%d,%d,%d\r\n",blockI,bx0,bx1,by0,by1);
 		block_it.forward();
 
 	}
+	fclose(fd);
 
 	return 0;
 }
